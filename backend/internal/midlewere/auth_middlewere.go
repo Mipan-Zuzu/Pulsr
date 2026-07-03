@@ -1,8 +1,6 @@
 package midlewere
 
 import (
-	"strings"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,12 +12,6 @@ func CheckingAuthorization() gin.HandlerFunc {
 				"error" : "needed authorization token",
 			})
 			return 
-		}
-
-		if !strings.HasPrefix(token, "Bearer ") {
-			ctx.JSON(401, gin.H{
-				"error" : "invalid authorization header",
-			})
 		}
 		ctx.Next()
 	}

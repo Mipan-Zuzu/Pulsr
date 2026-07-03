@@ -7,6 +7,7 @@ import (
 	"pulsr/internal/routing"
 	"github.com/joho/godotenv"
 	"github.com/gin-gonic/gin"
+	"pulsr/internal/model"
 )
 
 func main () {
@@ -14,6 +15,11 @@ func main () {
 	route := gin.Default()
 	port := "3031"
 	db, err := database.PostgresConnection()
+	ErrModelAccsesToken := db.AutoMigrate(&model.AccsesTokenSupabase{})
+	
+	if ErrModelAccsesToken != nil {
+		log.Fatal(ErrModelAccsesToken)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"pulsr/internal/database"
 	"pulsr/internal/routing"
 	"github.com/joho/godotenv"
@@ -18,10 +17,10 @@ func main () {
 	ErrModelAccsesToken := db.AutoMigrate(&model.AccsesTokenSupabase{})
 	
 	if ErrModelAccsesToken != nil {
-		log.Fatal(ErrModelAccsesToken)
+		fmt.Println(ErrModelAccsesToken)
 	}
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	routing.SetupRouting(db, route)
 	route.Run(fmt.Sprintf(":%s", port))

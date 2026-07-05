@@ -40,13 +40,19 @@ func SetupRouting(db *gorm.DB, route *gin.Engine) {
 	// Supabase (belum di isi function)
 		route.GET("/v1/supabase/projects",midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProject(db))
 
-		route.GET(fmt.Sprintf("%sprojects/:id", supabasePath), midlewere.CheckingAuthorization(), )
+		route.GET(fmt.Sprintf("%sprojects/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProjectId(db))
 		
-		route.GET(fmt.Sprintf("%sanalytics/usage/:id", supabasePath))
-		route.GET(fmt.Sprintf("%sanalytics/logs/:id", supabasePath)) //NEED query  ( iso_timestamp_start, iso_timestamp_end )
+		route.GET(fmt.Sprintf("%sanalytics/usage/:id", supabasePath),
+		midlewere.CheckingAuthorization(), handler.HandlerSupabaseAnalytics())
+
+		route.GET(fmt.Sprintf("%sanalytics/logs/:id", supabasePath), midlewere.CheckingAuthorization(), 
+		handler.HandlerSupabaseAnalyticsLogs()) //NEED query  ( iso_timestamp_start, iso_timestamp_end )
+
+		// Belum perlu
 		route.GET(fmt.Sprintf("%sedge/status", supabasePath))
 
-		route.POST(fmt.Sprintf("%sproject/start/:id", supabasePath))
-		route.POST(fmt.Sprintf("%sproject/pause/:id", supabasePath))
+		route.POST(fmt.Sprintf("%sproject/pause/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabasePauseProject())
+
+		route.POST(fmt.Sprintf("%sproject/start/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseStartProject())
 	// Koyeb
 }

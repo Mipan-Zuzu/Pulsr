@@ -15,6 +15,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// SUPABASE
+
 func HandlerSupabaseGetAllProject(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authtoken := ctx.GetHeader("Authorization")

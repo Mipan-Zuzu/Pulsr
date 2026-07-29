@@ -55,4 +55,7 @@ func SetupRouting(db *gorm.DB, route *gin.Engine) {
 
 		route.POST(fmt.Sprintf("%sproject/start/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseStartProject())
 	// Koyeb
+
+
+		route.POST("/redis/auth/save", )
 }

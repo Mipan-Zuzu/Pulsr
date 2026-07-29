@@ -4,6 +4,7 @@
     import { storeToRefs } from "pinia"
 
     import Vercel from '../Monitoring/Vercel.vue'
+    import Supabase from '../Monitoring/Supabase.vue'
 
     const storeNav = useNavSidebar()
 
@@ -11,17 +12,16 @@
 </script>
 
 <template>
-    <body>
-        <aside class="fixed">
+        <aside class="fixed z-50 ">
             <Sidebar />
         </aside>
-        <div>
+        <!-- ini -->
+        <div> 
             <section :class="myState === 'Vercel' ? 'block' : 'hidden'">
                 <Vercel />
             </section>
-            <!-- <section :class="">
-                
-            </section> -->
+             <section :class="myState === 'Supabase' ? 'block' : 'hidden'">
+                <Supabase />
+            </section>
         </div>
-    </body>
 </template>

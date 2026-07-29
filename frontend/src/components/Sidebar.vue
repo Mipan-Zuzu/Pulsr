@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue"
 import { useNavSidebar } from "../store/navside"
 import { ref } from "vue"
 
-const toogleSidebar = ref<boolean>(true)
+const toogleSidebar = ref<boolean>(false)
 const storeNav = useNavSidebar()
 // const log = console.log
 
@@ -36,10 +36,10 @@ const handleTooglebar = () => {
 </script>
 
 <template>
-    <div>
+    <div class="bg-white">
         <aside class="border-r border-stone-200 h-screen w-52 flex flex-col"
             :class="toogleSidebar === false ? 'hidden' : 'block'">
-            <!-- Header -->
+    
             <div class="mt-4 flex items-center px-3 gap-3 shrink-0">
                 <Icon class="text-stone-700" icon="tabler:brand-cake" width="32" height="32" />
                 <section class="flex flex-col">

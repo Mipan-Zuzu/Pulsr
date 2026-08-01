@@ -30,3 +30,8 @@ export const supabaseProject = defineStore("project", () => {
 
   return {allproject, projectDetail, loadingProject, projectDetailError};
 });
+
+  
+  export const supabaseDetail = () => {
+
+  }

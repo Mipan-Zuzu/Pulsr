@@ -36,7 +36,7 @@ const handleTooglebar = () => {
 </script>
 
 <template>
-    <div class="bg-white">
+    <div class="bg-white z-50">
         <aside class="border-r border-stone-200 h-screen w-52 flex flex-col"
             :class="toogleSidebar === false ? 'hidden' : 'block'">
     

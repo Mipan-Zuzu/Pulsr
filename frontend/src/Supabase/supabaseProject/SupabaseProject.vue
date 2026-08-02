@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
 import Sidebar from 'primevue/sidebar';
 import SidebarBackdrop from 'primevue/sidebarbackdrop';
 import SidebarAside from 'primevue/sidebaraside';
@@ -25,6 +25,23 @@ import SidebarRail from 'primevue/sidebarrail';
 import SidebarSpacer from 'primevue/sidebarspacer';
 import SidebarTrigger from 'primevue/sidebartrigger';
 import { Icon } from '@iconify/vue';
+import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { supabaseDetail } from '../../store/supabase';
+import Skeleton from 'primevue/skeleton';
+
+const route = useRoute()
+const projectDetail = ref()
+const supabasePorjectDetail = supabaseDetail()
+
+const id = route.params.id
+
+const detailProject = ref()
+const {projectData, errProject, loadingProject} = storeToRefs(supabaseDetail())
+
+onBeforeMount(() => {
+    supabasePorjectDetail.allprojectData(id)
+})
 
 const isMobile = ref(false);
 const open = ref(false);
@@ -53,7 +70,9 @@ onBeforeUnmount(() => {
     if (mql && onMqlChange) {
         mql.removeEventListener('change', onMqlChange);
     }
-});
+})
+
+
 </script>
 
 <template>
@@ -69,8 +88,10 @@ onBeforeUnmount(() => {
                             <SidebarMenu>
                                 <SidebarMenuItem>
                                     <SidebarMenuButton class="p-1!">
-                                        <div class="flex size-6 shrink-0 items-center justify-center rounded-md bg-emerald-600 text-white text-xs font-bold leading-none">A</div>
-                                        <span class="font-semibold text-sm">Acme Inc</span>
+                                        <div class="flex size-6 shrink-0 items-center justify-center rounded-md text-white text-xs font-bold leading-none">
+                                        <Icon class="text-stone-700" icon="tabler:brand-cake"  />
+                                        </div>
+                                        <span class="font-semibold text-sm">Pulsr Demo</span>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             </SidebarMenu>
@@ -112,7 +133,24 @@ onBeforeUnmount(() => {
                 </SidebarAside>
             </Sidebar>
 
-            <SidebarMain>
+            <SidebarMain v-if="loadingProject == true">
+            <header class="flex h-12 items-center gap-2 border-b border-surface-200 dark:border-surface-700 px-4">
+                    <SidebarTrigger v-if="isMobile" target="iconbar" severity="secondary" :text="true" size="small">
+                        <Icon icon="lucide:panel-left" />
+                    </SidebarTrigger>
+                    <span class="text-sm font-medium">Suapabse </span>
+                    <span class="text-xs text-muted-color">| Monitoring</span>
+                </header>
+                    <div class="flex-1 p-4 flex flex-col gap-4 overflow-y-auto">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <Skeleton />
+                    <Skeleton />
+                    <Skeleton />
+                    <Skeleton />
+                   </div>
+                   </div>
+            </SidebarMain>
+            <SidebarMain v-else>
                 <header class="flex h-12 items-center gap-2 border-b border-surface-200 dark:border-surface-700 px-4">
                     <SidebarTrigger v-if="isMobile" target="iconbar" severity="secondary" :text="true" size="small">
                         <Icon icon="lucide:panel-left" />

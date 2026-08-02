@@ -10,7 +10,7 @@ import { useRouter } from "vue-router";
 // import { useRouter } from "vue-router";
 
 // Internal
-import { ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { supabaseProject } from '../store/supabase';
 import UptimeSupabase from "../Supabase/UptimeSupabase.vue";
 import RequestTotal from "../Supabase/RequestTotal.vue";
@@ -31,6 +31,10 @@ const visible = ref<boolean>(false)
 const authTokenSupabase = ref<string>("")
 const storeprojectSupabase = supabaseProject()
 const { projectDetail } = storeToRefs(storeprojectSupabase)
+
+onBeforeMount(() => {
+    storeprojectSupabase.allproject("null")
+})
 
 const handleauthToken = () => {
     storeprojectSupabase.allproject(authTokenSupabase.value)

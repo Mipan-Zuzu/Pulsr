@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"pulsr/internal/cache"
 	"pulsr/internal/database"
 	"pulsr/internal/model"
 	"pulsr/internal/routing"
@@ -42,6 +43,8 @@ func main() {
 	db, err := database.PostgresConnection()
 	ErrModelAccsesToken := db.AutoMigrate(&model.AccsesTokenSupabase{})
 
+	rdb := cache.GetClient()
+
 	if ErrModelAccsesToken != nil {
 		fmt.Println(ErrModelAccsesToken)
 	}
@@ -49,6 +52,7 @@ func main() {
 		fmt.Println(err)
 	}
 	routing.SetupRouting(db, route)
+	routing.SetupRedisUpstash(route, rdb)
 	route.Run(fmt.Sprintf(":%s", port))
 	fmt.Println(fmt.Printf("Server Listen in Port %s", port))
 }

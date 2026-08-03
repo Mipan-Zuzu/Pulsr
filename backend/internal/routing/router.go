@@ -7,6 +7,7 @@ import (
 	"pulsr/internal/midlewere"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -18,6 +19,12 @@ func Ping() gin.HandlerFunc {
 			"status": status + "dasdasdasdsad",
 		})
 	}
+}
+
+func SetupRedisUpstash(route *gin.Engine, rdb *redis.Client) {
+	redisRoute := "v1/redis"
+
+	route.GET(fmt.Sprintf("%sdata", redisRoute), handler.SetValueRedis(rdb))
 }
 
 func SetupRouting(db *gorm.DB, route *gin.Engine) {

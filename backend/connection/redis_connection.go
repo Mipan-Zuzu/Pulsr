@@ -1,5 +1,0 @@
-package connection
-
-func redisconnection () {
-	
-}

@@ -9,16 +9,19 @@ import (
 
 	// "os"
 	"pulsr/internal/struct"
+	"pulsr/internal/database"
 	// "reflect"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 // SUPABASE
 
 
-func HandlerSupabaseGetAllProject(db *gorm.DB) gin.HandlerFunc {
+func HandlerSupabaseGetAllProject(db *gorm.DB, rdb *redis.Client) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authtoken := ctx.GetHeader("Authorization")
 		client := resty.New()
@@ -41,6 +44,24 @@ func HandlerSupabaseGetAllProject(db *gorm.DB) gin.HandlerFunc {
 			})
 			return
 		}
+
+		errRedisSet, keyrand := database.SetValueRedis(ctx ,rdb, authtoken);
+
+		if  errRedisSet != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H {
+				"message" : errRedisSet,
+			})
+		}
+
+		ctx.SetCookie(
+			"supabase_key",
+			keyrand,
+			300,
+			"/",
+			"",
+			false,
+			true,
+		)
 
 		fmt.Println(res)
 		ctx.JSON(200, gin.H{

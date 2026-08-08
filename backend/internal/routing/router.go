@@ -21,13 +21,7 @@ func Ping() gin.HandlerFunc {
 	}
 }
 
-func SetupRedisUpstash(route *gin.Engine, rdb *redis.Client) {
-	redisRoute := "v1/redis"
-
-	route.GET(fmt.Sprintf("%sdata", redisRoute), handler.SetValueRedis(rdb))
-}
-
-func SetupRouting(db *gorm.DB, route *gin.Engine) {
+func SetupRouting(db *gorm.DB, route *gin.Engine, rdb *redis.Client) {
 	supabasePath := "v1/supabase/"
 	// vercelPath := "v1/vercel/"
 	route.GET("/ping", Ping())
@@ -45,7 +39,7 @@ func SetupRouting(db *gorm.DB, route *gin.Engine) {
 	//CloudFlare
 
 	// Supabase (belum di isi function)
-		route.GET("/v1/supabase/projects",midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProject(db))
+		route.GET("/v1/supabase/projects",midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProject(db, rdb))
 
 		route.GET(fmt.Sprintf("%sprojects/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProjectId(db))
 		
@@ -64,5 +58,4 @@ func SetupRouting(db *gorm.DB, route *gin.Engine) {
 	// Koyeb
 
 
-		route.POST("/redis/auth/save", )
 }

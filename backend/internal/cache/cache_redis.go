@@ -35,6 +35,5 @@ func GetClient() *redis.Client {
 		}
 		fmt.Printf("Succses connect to redis")
 	})
-	fmt.Printf("Succses connect to redis")
 	return instance
 }

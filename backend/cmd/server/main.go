@@ -7,7 +7,6 @@ import (
 	"pulsr/internal/database"
 	"pulsr/internal/model"
 	"pulsr/internal/routing"
-
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -51,8 +50,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	routing.SetupRouting(db, route)
-	routing.SetupRedisUpstash(route, rdb)
+	routing.SetupRouting(db, route, rdb)
 	route.Run(fmt.Sprintf(":%s", port))
 	fmt.Println(fmt.Printf("Server Listen in Port %s", port))
 }

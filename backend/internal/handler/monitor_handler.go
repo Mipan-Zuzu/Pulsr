@@ -53,6 +53,7 @@ func HandlerSupabaseGetAllProject(db *gorm.DB, rdb *redis.Client) gin.HandlerFun
 			})
 		}
 
+		ctx.SetSameSite(http.SameSiteLaxMode)
 		ctx.SetCookie(
 			"supabase_key",
 			keyrand,

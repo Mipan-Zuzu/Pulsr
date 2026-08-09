@@ -27,25 +27,20 @@ type Authkey struct {
 
 func GetValueRedis(rdb *redis.Client) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token, err := ctx.Cookie("auth_key_supabase")
+		token, _ := ctx.Cookie("supabase_key")
+		if token == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message" : "invalid cookie",
+			})
+		}
+		dat, err := rdb.Get(ctx, token).Result()
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message": "cookie not found",
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message" : "invalid get redis",
 			})
-			return
 		}
-
-		token, errdb := rdb.Get(ctx, token).Result()
-
-		if errdb != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message": "key not found",
-			})
-			return
-		}
-
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": token,
+			"message": dat,
 		})
 	}
 }

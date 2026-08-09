@@ -10,12 +10,13 @@ import { useRouter } from "vue-router";
 // import { useRouter } from "vue-router";
 
 // Internal
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import { supabaseProject } from '../store/supabase';
 import UptimeSupabase from "../Supabase/UptimeSupabase.vue";
 import RequestTotal from "../Supabase/RequestTotal.vue";
 import ErrorHistory from "../Supabase/ErrorHistory.vue";
 import type { Project } from "../type/typeSupabase.ts";
+import { Redis } from "../store/redis.ts";
 
 // component
 import Message from 'primevue/message';
@@ -30,10 +31,13 @@ const visible = ref<boolean>(false)
 
 const authTokenSupabase = ref<string>("")
 const storeprojectSupabase = supabaseProject()
+const redis = Redis()
 const { projectDetail } = storeToRefs(storeprojectSupabase)
+const {authKey} = storeToRefs(redis)
 
-onBeforeMount(() => {
-    storeprojectSupabase.allproject("null")
+onBeforeMount(async() => {
+    await redis.redisFind()
+    storeprojectSupabase.allproject(authKey.value!)
 })
 
 const handleauthToken = () => {
@@ -42,7 +46,6 @@ const handleauthToken = () => {
 
 watch(projectDetail, (newValue) => {
     ProjectData.value = newValue.data
-    console.log(newValue)
 })
 
 const handleDialog = () => {

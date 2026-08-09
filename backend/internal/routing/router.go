@@ -5,7 +5,7 @@ import (
 
 	"pulsr/internal/handler"
 	"pulsr/internal/midlewere"
-
+	"pulsr/internal/database"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -57,5 +57,5 @@ func SetupRouting(db *gorm.DB, route *gin.Engine, rdb *redis.Client) {
 		route.POST(fmt.Sprintf("%sproject/start/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseStartProject())
 	// Koyeb
 
-
+		route.GET("v1/redis/dat", database.GetValueRedis(rdb))
 }

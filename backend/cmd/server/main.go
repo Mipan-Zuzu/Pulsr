@@ -11,27 +11,32 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var allowedOrigins = map[string]bool{
+    "http://localhost:3031": true,
+    "http://localhost:3032": true,
+}
+
 func setupCORS(route *gin.Engine) {
-	route.Use(func(c *gin.Context) {
-		origin := c.GetHeader("Origin")
-		if origin != "" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-			c.Writer.Header().Set("Vary", "Origin")
-		} else {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		}
+    route.Use(func(c *gin.Context) {
+        origin := c.GetHeader("Origin")
+        if allowedOrigins[origin] {
+            c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+            c.Writer.Header().Set("Vary", "Origin")
+        }
+        // kalau origin gak ada di whitelist, JANGAN set header apapun
+        // biar browser otomatis block
 
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 
-		if c.Request.Method == http.MethodOptions {
-			c.AbortWithStatus(http.StatusNoContent)
-			return
-		}
+        if c.Request.Method == http.MethodOptions {
+            c.AbortWithStatus(http.StatusNoContent)
+            return
+        }
 
-		c.Next()
-	})
+        c.Next()
+    })
 }
 
 func main() {

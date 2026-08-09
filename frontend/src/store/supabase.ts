@@ -1,24 +1,28 @@
 import axios from "axios";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { ref } from "vue";
+import { Redis } from "./redis";
 
 export const supabaseProject = defineStore("project", () => {
+  const redis = Redis()
+  const {authKey} = storeToRefs(redis)
+  console.log(authKey)
   const projectDetail = ref();
   const projectDetailError = ref<string>("");
 
   const loadingProject = ref<boolean>(false);
+  console.log(authKey.value)
 
   const allproject = async (value: string
   ) => {
-    localStorage.setItem("sbg_supabase", value)
-    const authKey = localStorage.getItem("sbg_supabase")
     loadingProject.value = true;
     try {
       const res = await axios.get("http://localhost:3031/v1/supabase/projects", {
-        headers: {
-          Authorization: `${value === "null" ? authKey : value}`  
-        }
-      });
+    headers: {
+        Authorization: value
+    },
+    withCredentials: true 
+});
       console.log(res.data)
       projectDetail.value = res.data
     } catch (err) {
@@ -63,3 +67,5 @@ export const supabaseProject = defineStore("project", () => {
     }
     return {allprojectData, projectData, errProject, loadingProject}
   })
+
+

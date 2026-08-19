@@ -41,6 +41,10 @@ func SetupRouting(db *gorm.DB, route *gin.Engine, rdb *redis.Client) {
 	// Supabase (belum di isi function)
 		route.GET("/v1/supabase/projects",midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProject(db, rdb))
 
+		route.GET("/v1/supabase/org", midlewere.CheckingAuthorization(), handler.HandlerOrg())
+
+		route.GET("/v1/supabase/org/:id", midlewere.CheckingAuthorization(), handler.HandlerOrgDetail())
+
 		route.GET(fmt.Sprintf("%sprojects/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProjectId(db))
 		
 		route.GET(fmt.Sprintf("%sanalytics/usage/:id", supabasePath),

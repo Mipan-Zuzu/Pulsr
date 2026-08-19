@@ -8,8 +8,9 @@ import (
 	"time"
 
 	// "os"
-	"pulsr/internal/struct"
 	"pulsr/internal/database"
+	"pulsr/internal/struct"
+
 	// "reflect"
 
 	"github.com/gin-gonic/gin"
@@ -68,6 +69,71 @@ func HandlerSupabaseGetAllProject(db *gorm.DB, rdb *redis.Client) gin.HandlerFun
 		ctx.JSON(200, gin.H{
 			"status": 200,
 			"data":   result,
+		})
+	}
+}
+
+func HandlerOrg() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		authtoken := ctx.GetHeader("Authorization")
+
+		client := resty.New()
+		var org []Struct.Org
+		res, err := client.R().
+			SetAuthToken(authtoken). 
+			SetResult(&org). 
+			Get("https://api.supabase.com/v1/organizations")
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message" : err,
+			})
+			return
+		}
+
+		if res.StatusCode() == http.StatusUnauthorized {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"message" : "invalid authorize token",
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data" : org,
+			"status" : 200,
+		})
+	}
+}
+
+func HandlerOrgDetail() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		authtoken := ctx.GetHeader("Authorization")
+		id := ctx.Param("id")
+
+		client := resty.New()
+		var result Struct.OrgDetail
+		res, err := client.R().
+			SetAuthToken(authtoken).
+			SetResult(&result). 
+			Get(fmt.Sprintf("https://api.supabase.com/v1/organizations/%s", id))
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message" : err,
+			})
+			return 
+		}
+
+		if res.StatusCode() == http.StatusUnauthorized {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"message" : "request not auhtorized",
+			})
+			return 
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data" : result,
+			"status" : 200,
 		})
 	}
 }
@@ -140,6 +206,8 @@ func HandlerSupabaseAnalytics() gin.HandlerFunc {
 		})
 	}
 }
+
+
 
 func HandlerSupabaseAnalyticsLogs() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

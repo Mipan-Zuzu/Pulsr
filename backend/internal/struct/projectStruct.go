@@ -1,5 +1,19 @@
 package Struct
 
+type Org struct {
+	Id string `json:"id"`
+	Slug string `json:"slug"`
+	Name string `json:"name"`
+}
+
+type OrgDetail struct {
+	ID                      string   `json:"id"`
+	Name                    string   `json:"name"`
+	Plan                    string   `json:"plan"`
+	OptInTags               []string `json:"opt_in_tags"`
+	AllowedReleaseChannels  []string `json:"allowed_release_channels"`
+}
+
 type Database struct {
 	Host            string `json:"host"`
 	Version         string `json:"version"`

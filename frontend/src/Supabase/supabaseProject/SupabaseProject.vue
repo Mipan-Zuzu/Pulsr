@@ -1,29 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import { onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
 import Sidebar from 'primevue/sidebar';
-import SidebarBackdrop from 'primevue/sidebarbackdrop';
-import SidebarAside from 'primevue/sidebaraside';
-import SidebarContent from 'primevue/sidebarcontent';
-import SidebarFooter from 'primevue/sidebarfooter';
-import SidebarGroup from 'primevue/sidebargroup';
-import SidebarGroupAction from 'primevue/sidebargroupaction';
-import SidebarGroupContent from 'primevue/sidebargroupcontent';
-import SidebarGroupLabel from 'primevue/sidebargrouplabel';
-import SidebarHeader from 'primevue/sidebarheader';
-import SidebarMain from 'primevue/sidebarmain';
-import SidebarLayout from 'primevue/sidebarlayout';
-import SidebarMenu from 'primevue/sidebarmenu';
-import SidebarMenuAction from 'primevue/sidebarmenuaction';
-import SidebarMenuBadge from 'primevue/sidebarmenubadge';
-import SidebarMenuButton from 'primevue/sidebarmenubutton';
-import SidebarMenuItem from 'primevue/sidebarmenuitem';
-import SidebarMenuSub from 'primevue/sidebarmenusub';
-import SidebarMenuSubButton from 'primevue/sidebarmenusubbutton';
-import SidebarMenuSubItem from 'primevue/sidebarmenusubitem';
-import SidebarPanel from 'primevue/sidebarpanel';
-import SidebarRail from 'primevue/sidebarrail';
-import SidebarSpacer from 'primevue/sidebarspacer';
-import SidebarTrigger from 'primevue/sidebartrigger';
 import { Icon } from '@iconify/vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -31,13 +8,11 @@ import { supabaseDetail } from '../../store/supabase';
 import Skeleton from 'primevue/skeleton';
 
 const route = useRoute()
-const projectDetail = ref()
 const supabasePorjectDetail = supabaseDetail()
 
-const id = route.params.id
+const id = route.params.id as string
 
-const detailProject = ref()
-const {projectData, errProject, loadingProject} = storeToRefs(supabaseDetail())
+const {loadingProject} = storeToRefs(supabaseDetail())
 
 onBeforeMount(() => {
     supabasePorjectDetail.allprojectData(id)
@@ -45,8 +20,8 @@ onBeforeMount(() => {
 
 const isMobile = ref(false);
 const open = ref(false);
-let mql = null;
-let onMqlChange = null;
+let mql: MediaQueryList | null = null;
+let onMqlChange: ((e : MediaQueryListEvent) => void) | null = null;
 
 const stats = [
     { label: 'Database Size', value: '1.2 GB', trend: 4, icon: 'lucide:database' },
@@ -77,84 +52,72 @@ onBeforeUnmount(() => {
 
 <template>
     <section class="border border-surface-200 dark:border-surface-700 rounded-lg overflow-hidden">
-        <SidebarLayout class="min-h-192! relative!">
-            <SidebarBackdrop v-if="isMobile && open" class="absolute!" />
-            <!-- Icon bar - always collapsed, opens on hover as overlay -->
-            <Sidebar id="iconbar" side="left" :collapsible="isMobile ? 'offcanvas' : 'icon'" :overlay="true" :openOnHover="!isMobile" width="12rem" v-model:open="open">
-                <SidebarSpacer />
-                <SidebarAside>
-                    <SidebarPanel>
-                        <SidebarHeader>
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <SidebarMenuButton class="p-1!">
-                                        <div class="flex size-6 shrink-0 items-center justify-center rounded-md text-white text-xs font-bold leading-none">
-                                        <Icon class="text-stone-700" icon="tabler:brand-cake"  />
-                                        </div>
-                                        <span class="font-semibold text-sm">Pulsr Demo</span>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            </SidebarMenu>
-                        </SidebarHeader>
+        <div class="min-h-192 relative">
+            <div
+                v-if="isMobile && open"
+                class="absolute inset-0 bg-black/20 z-40"
+                @click="open = false"
+            />
 
-                        <SidebarContent>
-                            <SidebarGroup>
-                                <SidebarGroupContent>
-                                    <SidebarMenu>
-                                        <SidebarMenuItem>
-                                            <SidebarMenuButton :isActive="true">
-                                                <Icon icon="lucide:home" />
-                                                <span>Home</span>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                        <SidebarMenuItem>
-                                            <SidebarMenuButton>
-                                                <Icon icon="lucide:database" />
-                                                <span>Database</span>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                        <SidebarMenuItem>
-                                            <SidebarMenuButton>
-                                                <Icon icon="lucide:key" />
-                                                <span>Authentication</span>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                        <SidebarMenuItem>
-                                            <SidebarMenuButton>
-                                                <Icon icon="lucide:logs" />
-                                                <span>Edge Functions</span>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                    </SidebarMenu>
-                                </SidebarGroupContent>
-                            </SidebarGroup>
-                        </SidebarContent>
-                    </SidebarPanel>
-                </SidebarAside>
+            <Sidebar
+                v-model:visible="open"
+                :position="isMobile ? 'left' : 'left'"
+                :modal="isMobile"
+                :show-close-icon="false"
+                class="w-48"
+            >
+                <div class="flex h-full flex-col bg-surface-0 dark:bg-surface-900">
+                    <div class="flex items-center gap-2 border-b border-surface-200 dark:border-surface-700 px-4 py-3">
+                        <div class="flex size-6 shrink-0 items-center justify-center rounded-md bg-stone-100 text-stone-700 text-xs font-bold leading-none">
+                            <Icon icon="tabler:brand-cake" />
+                        </div>
+                        <span class="font-semibold text-sm">Pulsr Demo</span>
+                    </div>
+
+                    <nav class="flex flex-col gap-1 p-3">
+                        <button class="flex items-center gap-3 rounded-md bg-surface-100 dark:bg-surface-800 px-3 py-2 text-left text-sm font-medium text-surface-900 dark:text-surface-0">
+                            <Icon icon="lucide:home" />
+                            <span>Home</span>
+                        </button>
+                        <button class="flex items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800">
+                            <Icon icon="lucide:database" />
+                            <span>Database</span>
+                        </button>
+                        <button class="flex items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800">
+                            <Icon icon="lucide:key" />
+                            <span>Authentication</span>
+                        </button>
+                        <button class="flex items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800">
+                            <Icon icon="lucide:logs" />
+                            <span>Edge Functions</span>
+                        </button>
+                    </nav>
+                </div>
             </Sidebar>
 
-            <SidebarMain v-if="loadingProject == true">
-            <header class="flex h-12 items-center gap-2 border-b border-surface-200 dark:border-surface-700 px-4">
-                    <SidebarTrigger v-if="isMobile" target="iconbar" severity="secondary" :text="true" size="small">
+            <main v-if="loadingProject == true" class="min-h-192">
+                <header class="flex h-12 items-center gap-2 border-b border-surface-200 dark:border-surface-700 px-4">
+                    <button v-if="isMobile" class="inline-flex items-center justify-center rounded-md border border-surface-200 bg-surface-0 px-2 py-1 text-sm dark:border-surface-700 dark:bg-surface-900" @click="open = true">
                         <Icon icon="lucide:panel-left" />
-                    </SidebarTrigger>
+                    </button>
                     <span class="text-sm font-medium">Suapabse </span>
                     <span class="text-xs text-muted-color">| Monitoring</span>
                 </header>
-                    <div class="flex-1 p-4 flex flex-col gap-4 overflow-y-auto">
+                <div class="flex-1 p-4 flex flex-col gap-4 overflow-y-auto">
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    <Skeleton />
-                    <Skeleton />
-                    <Skeleton />
-                    <Skeleton />
-                   </div>
-                   </div>
-            </SidebarMain>
-            <SidebarMain v-else>
+                        <Skeleton />
+                        <Skeleton />
+                        <Skeleton />
+                        <Skeleton />
+                    </div>
+                </div>
+            </main>
+
+            <main v-else class="min-h-192">
                 <header class="flex h-12 items-center gap-2 border-b border-surface-200 dark:border-surface-700 px-4">
-                    <SidebarTrigger v-if="isMobile" target="iconbar" severity="secondary" :text="true" size="small">
+                    <button v-if="isMobile" class="inline-flex items-center justify-center rounded-md border border-surface-200 bg-surface-0 px-2 py-1 text-sm dark:border-surface-700 dark:bg-surface-900" @click="open = true">
                         <Icon icon="lucide:panel-left" />
-                    </SidebarTrigger>
+                    </button>
                     <span class="text-sm font-medium">Suapabse </span>
                     <span class="text-xs text-muted-color">| Monitoring</span>
                 </header>
@@ -175,7 +138,7 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
                 </div>
-            </SidebarMain>
-        </SidebarLayout>
+            </main>
+        </div>
     </section>
 </template>

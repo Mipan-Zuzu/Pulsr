@@ -2,6 +2,7 @@ import axios from "axios";
 import { defineStore, storeToRefs } from "pinia";
 import { ref } from "vue";
 import { Redis } from "./redis";
+import type { OrgDetail } from "../type/typeSupabase";
 
 export const supabaseProject = defineStore("project", () => {
   const redis = Redis()
@@ -37,6 +38,33 @@ export const supabaseProject = defineStore("project", () => {
   return {allproject, projectDetail, loadingProject, projectDetailError};
 });
 
+
+export const supabaseDetailOrg = defineStore("detailOrgs", () => {
+  const DetailOrg = ref<OrgDetail>()
+  const Errors = ref<string | null>()
+  const detailOrg = async (id: string, key: string ) => {
+    try{
+      if (id === "") {
+        Errors.value = "Error missing id"
+        return
+      }
+      const res = await axios.get(`http://localhost:3031/v1/supabase/org/${id}`, {
+        headers: {
+          Authorization: key
+        }
+      })
+      DetailOrg.value = res.data.data
+      Errors.value = null
+      console.log(DetailOrg.value)
+    }catch (err) {
+      if (err instanceof Error) {
+        Errors.value = err.message
+        return
+      }
+    }
+  }
+  return {DetailOrg, Errors, detailOrg}
+})
   
   export const supabaseDetail = defineStore("projectdetail", () => {
     const projectData = ref()

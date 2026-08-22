@@ -12,7 +12,7 @@ export const Redis = defineStore("redis", () => {
                 withCredentials: true
             })
             authKey.value = res.data.message
-            console.log(authKey.value)
+            console.log(res.data.message)
         }catch (err) {
             if (err instanceof Error) {
                 errRedis.value = err.message

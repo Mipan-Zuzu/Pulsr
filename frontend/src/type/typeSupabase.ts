@@ -8,7 +8,7 @@ interface Database {
 export interface Project {
   id: string;
   ref: string;
-  organizationId: string;
+  organization_id: string;
   organizationSlug: string;
   name: string;
   region: string;
@@ -16,3 +16,13 @@ export interface Project {
   database: Database;
   createdAt: string;
 }
+
+
+export interface OrgDetail {
+  id : string 
+  Name : string 
+  plan : string
+  opt_in_tags : string[]
+  allowed_release_channels : string[]
+}
+

@@ -2,22 +2,26 @@
 import { Icon } from '@iconify/vue';
 import { onBeforeMount, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { supabaseProject } from '../store/supabase';
+import { supabaseProject, supabaseDetailOrg } from '../store/supabase';
 import { Redis } from '../store/redis';
 import { RouterLink } from 'vue-router';
 import { Skeleton } from 'primevue';
-import type { Project } from '../type/typeSupabase';
+import type { Project, OrgDetail } from '../type/typeSupabase';
 
 const authkeys = ref<string>();
 const authKeyInput = ref<string>('');
 const isCheckingAuth = ref<boolean>(true);
 
-const supabaseOrg = ref<Project[]>()
-const loadingOrg = ref<boolean>(true)
+const id = ref<string>("")
 
-const supabase = supabaseProject();
-const redis = Redis();
-const { authKey, errRedis } = storeToRefs(redis);
+const supabaseOrg = ref<Project[]>()
+const supabaseDetailOrgs = ref<OrgDetail>()
+const loadingOrg = ref<boolean>(true)
+    
+    const supabase = supabaseProject();
+    const redis = Redis();
+    const { authKey, errRedis } = storeToRefs(redis);
+    const orgDetail = supabaseDetailOrg();
 
 onBeforeMount(async () => {
     await redis.redisFind();
@@ -28,15 +32,26 @@ onBeforeMount(async () => {
         return;
     }
 
-    await supabase.allproject(authKeyInput.value)
+    await supabase.allproject(authKey.value as string)
     const { projectDetail, loadingProject } = storeToRefs(supabase)
-
+    
     loadingOrg.value = loadingProject.value
-    supabaseOrg.value = projectDetail.value
+    supabaseOrg.value = projectDetail.value.data
+    supabaseOrg.value?.map(org => id.value = org.organization_id)
+    authkeys.value = authKey.value
+    isCheckingAuth.value = false
 
-    authkeys.value = authKey.value;
-    isCheckingAuth.value = false;
-     console.log(projectDetail.value, loadingOrg.value)
+
+    await orgDetail.detailOrg(id.value, authKey.value as string)
+    const {DetailOrg,Errors} = storeToRefs(orgDetail)
+
+    if (Errors.value != null) {
+        console.log(Errors.value)
+        return 
+    }
+
+    supabaseDetailOrgs.value = DetailOrg.value
+    console.log(id.value, authKey.value)
 });
 
 const submitAuthKey = async () => {
@@ -49,9 +64,24 @@ const submitAuthKey = async () => {
     loadingOrg.value = loadingProject.value
     supabaseOrg.value = projectDetail.value
 
+    supabaseOrg.value?.map(org => id.value = org.organizationId)
+
     console.log(projectDetail.value, loadingOrg.value)
 
     authkeys.value = authKeyInput.value;
+    await orgDetail.detailOrg(id.value,authKeyInput.value)
+
+    const {DetailOrg, Errors} = storeToRefs(orgDetail)
+
+    
+    if (Errors.value != null) {
+        console.log(Errors.value)
+        return 
+    }
+
+    supabaseDetailOrgs.value = DetailOrg.value
+    console.log(supabaseDetailOrgs.value)
+    
 };
 
 const searchOrg = ref<string>('');
@@ -104,9 +134,7 @@ const searchOrg = ref<string>('');
                 <div v-if="loadingOrg">
                     <Skeleton size="2rem" />
                 </div>
-                <RouterLink to="" v-else 
-                     
-                    >
+                <RouterLink to="" v-else>
                     <article
                         class="border p-5 px-7 rounded-lg hover:scale-105 duration-100 cursor-pointer hover:shadow-lg bg-white">
                         <span class="flex gap-7 items-center">

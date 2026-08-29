@@ -26,18 +26,6 @@ func SetupRouting(db *gorm.DB, route *gin.Engine, rdb *redis.Client) {
 	// vercelPath := "v1/vercel/"
 	route.GET("/ping", Ping())
 
-	//Vercel
-
-	// MongoDb
-
-	// Redis
-
-	// Domain
-
-	//Netlfy
-
-	//CloudFlare
-
 	// Supabase (belum di isi function)
 		route.GET("/v1/supabase/projects",midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProject(db, rdb))
 

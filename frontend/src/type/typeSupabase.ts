@@ -20,7 +20,7 @@ export interface Project {
 
 export interface OrgDetail {
   id : string 
-  Name : string 
+  name : string 
   plan : string
   opt_in_tags : string[]
   allowed_release_channels : string[]

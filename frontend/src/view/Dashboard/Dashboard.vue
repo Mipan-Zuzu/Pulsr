@@ -1,10 +1,10 @@
 <script setup lang="ts">
-    import Sidebar from '../components/Sidebar.vue'
-    import {useNavSidebar} from "../store/navside.ts"
+    import Sidebar from "../../components/Sidebar.vue"
+    import {useNavSidebar} from "../../store/navside.ts"
     import { storeToRefs } from "pinia"
 
-    import Vercel from '../Monitoring/Vercel.vue'
-    import Supabase from '../Monitoring/Supabase.vue'
+    import Vercel from '../../Monitoring/Vercel.vue'
+    import Supabase from '../../Monitoring/Supabase.vue'
 
     const storeNav = useNavSidebar()
 
@@ -15,7 +15,6 @@
         <aside class="fixed z-50 ">
             <Sidebar />
         </aside>
-        <!-- ini -->
         <div> 
             <section :class="myState === 'Vercel' ? 'block' : 'hidden'">
                 <Vercel />

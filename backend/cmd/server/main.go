@@ -14,6 +14,7 @@ import (
 var allowedOrigins = map[string]bool{
     "http://localhost:3031": true,
     "http://localhost:3032": true,
+	"http://192.168.100.6:3032": true,
 }
 
 func setupCORS(route *gin.Engine) {

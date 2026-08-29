@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router"
 
-import Dashboard from '../view/Dashboard.vue'
+import Dashboard from "../view/Dashboard/Dashboard.vue"
 import SupabaseProject from "../Supabase/supabaseProject/SupabaseProject.vue"
 
 const router = createRouter({

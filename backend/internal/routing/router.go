@@ -22,11 +22,9 @@ func Ping() gin.HandlerFunc {
 }
 
 func SetupRouting(db *gorm.DB, route *gin.Engine, rdb *redis.Client) {
-	supabasePath := "v1/supabase/"
-	// vercelPath := "v1/vercel/"
+	supabasePath := "/v1/supabase/"
 	route.GET("/ping", Ping())
 
-	// Supabase (belum di isi function)
 		route.GET("/v1/supabase/projects",midlewere.CheckingAuthorization(), handler.HandlerSupabaseGetAllProject(db, rdb))
 
 		route.GET("/v1/supabase/org", midlewere.CheckingAuthorization(), handler.HandlerOrg())
@@ -39,15 +37,15 @@ func SetupRouting(db *gorm.DB, route *gin.Engine, rdb *redis.Client) {
 		midlewere.CheckingAuthorization(), handler.HandlerSupabaseAnalytics())
 
 		route.GET(fmt.Sprintf("%sanalytics/logs/:id", supabasePath), midlewere.CheckingAuthorization(), 
-		handler.HandlerSupabaseAnalyticsLogs()) //NEED query  ( iso_timestamp_start, iso_timestamp_end )
+		handler.HandlerSupabaseAnalyticsLogs()) 
 
-		// Belum perlu
 		route.GET(fmt.Sprintf("%sedge/status", supabasePath))
 
 		route.POST(fmt.Sprintf("%sproject/pause/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabasePauseProject())
 
 		route.POST(fmt.Sprintf("%sproject/start/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerSupabaseStartProject())
-	// Koyeb
 
 		route.GET("v1/redis/dat", database.GetValueRedis(rdb))
+
+		route.GET(fmt.Sprintf("%sendpoints/metrics/:id", supabasePath), midlewere.CheckingAuthorization(), handler.HandlerMetrics(rdb))
 }

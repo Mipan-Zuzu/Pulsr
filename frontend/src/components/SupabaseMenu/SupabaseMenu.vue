@@ -19,8 +19,6 @@ import { useRouter } from 'vue-router';
 import MegaMenu from 'primevue/megamenu';
 
 const router = useRouter();
-
-// icon disimpan sebagai string "<set>:<nama-icon>", bukan komponen
 const items = ref([
     {
         label: 'Dashboard',

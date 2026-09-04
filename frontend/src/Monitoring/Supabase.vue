@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { supabaseProject, supabaseDetailOrg, supabaseDetail } from '../store/supabase';
+import { supabaseProject, supabaseDetailOrg } from '../store/supabase';
 import { Redis } from '../store/redis';
 import { RouterLink } from 'vue-router';
 import { Skeleton } from 'primevue';

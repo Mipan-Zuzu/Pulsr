@@ -15,10 +15,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import MegaMenu from 'primevue/megamenu';
-
-const router = useRouter();
 const items = ref([
     {
         label: 'Dashboard',

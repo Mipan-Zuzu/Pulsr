@@ -8,15 +8,14 @@ import (
 	"time"
 
 	"pulsr/internal/database"
-	"pulsr/internal/struct"
+	"pulsr/internal/prometheus"
+	Struct "pulsr/internal/struct"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
-
-
 
 func HandlerSupabaseGetAllProject(db *gorm.DB, rdb *redis.Client) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -42,11 +41,11 @@ func HandlerSupabaseGetAllProject(db *gorm.DB, rdb *redis.Client) gin.HandlerFun
 			return
 		}
 
-		errRedisSet, keyrand := database.SetValueRedis(ctx ,rdb, authtoken);
+		errRedisSet, keyrand := database.SetValueRedis(ctx, rdb, authtoken)
 
-		if  errRedisSet != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H {
-				"message" : errRedisSet,
+		if errRedisSet != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": errRedisSet,
 			})
 		}
 
@@ -54,7 +53,7 @@ func HandlerSupabaseGetAllProject(db *gorm.DB, rdb *redis.Client) gin.HandlerFun
 		ctx.SetCookie(
 			"supabase_key",
 			keyrand,
-			300,
+			86400,
 			"/",
 			"",
 			false,
@@ -76,32 +75,30 @@ func HandlerOrg() gin.HandlerFunc {
 		client := resty.New()
 		var org []Struct.Org
 		res, err := client.R().
-			SetAuthToken(authtoken). 
-			SetResult(&org). 
+			SetAuthToken(authtoken).
+			SetResult(&org).
 			Get("https://api.supabase.com/v1/organizations")
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message" : err,
+				"message": err,
 			})
 			return
 		}
 
 		if res.StatusCode() == http.StatusUnauthorized {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message" : "invalid authorize token",
+				"message": "invalid authorize token",
 			})
 			return
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"data" : org,
-			"status" : 200,
+			"data":   org,
+			"status": 200,
 		})
 	}
 }
-
-
 
 func HandlerOrgDetail() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -112,26 +109,26 @@ func HandlerOrgDetail() gin.HandlerFunc {
 		var result Struct.OrgDetail
 		res, err := client.R().
 			SetAuthToken(authtoken).
-			SetResult(&result). 
+			SetResult(&result).
 			Get(fmt.Sprintf("https://api.supabase.com/v1/organizations/%s", id))
 
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message" : err,
+				"message": err,
 			})
-			return 
+			return
 		}
 
 		if res.StatusCode() == http.StatusUnauthorized {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message" : "request not auhtorized",
+				"message": "request not auhtorized",
 			})
-			return 
+			return
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"data" : result,
-			"status" : 200,
+			"data":   result,
+			"status": 200,
 		})
 	}
 }
@@ -205,8 +202,6 @@ func HandlerSupabaseAnalytics() gin.HandlerFunc {
 	}
 }
 
-
-
 func HandlerSupabaseAnalyticsLogs() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		timeNow := time.Now().UTC()
@@ -221,7 +216,6 @@ func HandlerSupabaseAnalyticsLogs() gin.HandlerFunc {
 			SetResult(&result).
 			Get(fmt.Sprintf("https://api.supabase.com/v1/projects/%s/analytics/endpoints/logs.all?iso_timestamp_start=%s&iso_timestamp_end=%s", id, isoTimestampStart, isoTimestampEnd))
 
-		
 		fmt.Println(res)
 
 		if id == "" {
@@ -252,55 +246,55 @@ func HandlerSupabaseAnalyticsLogs() gin.HandlerFunc {
 	}
 }
 
-func HandlerSupabasePauseProject () gin.HandlerFunc {
+func HandlerSupabasePauseProject() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authtoken := ctx.GetHeader("Authorization")
 		id := ctx.Param("id")
 		var Message Struct.Pause
 		client := resty.New()
 
-		res,err := client.R(). 
-		SetAuthToken(authtoken).
-		SetResult(&Message).
-		SetError(&Message). 
-		Post(fmt.Sprintf("%sprojects/%s/pause", os.Getenv("SUPABASE_URL"), id))
+		res, err := client.R().
+			SetAuthToken(authtoken).
+			SetResult(&Message).
+			SetError(&Message).
+			Post(fmt.Sprintf("%sprojects/%s/pause", os.Getenv("SUPABASE_URL"), id))
 
 		if id == "" {
 			ctx.JSON(404, gin.H{
-				"message" : "cannot find spesific project",
+				"message": "cannot find spesific project",
 			})
-			return 
+			return
 		}
 
 		if err != nil {
 			ctx.JSON(401, gin.H{
-				"message" : err,
+				"message": err,
 			})
 			return
 		}
 
 		if res.StatusCode() == http.StatusUnauthorized {
 			ctx.JSON(401, gin.H{
-				"message" : Message.Message,
+				"message": Message.Message,
 			})
-			return 
+			return
 		}
 
 		if res.StatusCode() == http.StatusBadGateway {
 			ctx.JSON(400, gin.H{
-				"message" : Message.Message,
+				"message": Message.Message,
 			})
 			return
 		}
 
 		ctx.JSON(200, gin.H{
-			"message" : "succsesfull PAUSE service",
-			"id" : id,
+			"message": "succsesfull PAUSE service",
+			"id":      id,
 		})
 	}
 }
 
-func HandlerSupabaseStartProject () gin.HandlerFunc {
+func HandlerSupabaseStartProject() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authtoken := ctx.GetHeader("Authorization")
 		id := ctx.Param("id")
@@ -308,51 +302,51 @@ func HandlerSupabaseStartProject () gin.HandlerFunc {
 		client := resty.New()
 		if id == "" {
 			ctx.JSON(404, gin.H{
-				"message" : "cannot find spesific project",
+				"message": "cannot find spesific project",
 			})
 			return
 		}
-		res,err := client.R(). 
-		SetAuthToken(authtoken). 
-		SetResult(&Result). 
-		SetError(&Result).
-		Post(fmt.Sprintf("%sprojects/%s/restore",os.Getenv("SUPABASE_URL"), id ))
+		res, err := client.R().
+			SetAuthToken(authtoken).
+			SetResult(&Result).
+			SetError(&Result).
+			Post(fmt.Sprintf("%sprojects/%s/restore", os.Getenv("SUPABASE_URL"), id))
 
 		if err != nil {
 			ctx.JSON(401, gin.H{
-				"message" : err,
+				"message": err,
 			})
-			return 
+			return
 		}
-		
+
 		if res.StatusCode() == http.StatusUnauthorized {
 			ctx.JSON(401, gin.H{
-				"message" : "invalid authorization",
+				"message": "invalid authorization",
 			})
-			return 
+			return
 		}
 
 		if res.StatusCode() == http.StatusBadRequest {
 			ctx.JSON(400, gin.H{
-				"message" : Result.Message,
+				"message": Result.Message,
 			})
-			return 
+			return
 		}
 
 		fmt.Println(res)
 		ctx.JSON(200, gin.H{
-			"message" : "succsesfull START the service",
+			"message": "succsesfull START the service",
 		})
 	}
 }
 
-func HandlerMetrics (rdb *redis.Client) gin.HandlerFunc {
+func HandlerMetrics(rdb *redis.Client) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authtoken := ctx.GetHeader("Authorization")
 		id := ctx.Param("id")
 		if id == "" {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message" : "bad request missing data id",
+				"message": "bad request missing data id",
 			})
 			return
 		}
@@ -360,24 +354,40 @@ func HandlerMetrics (rdb *redis.Client) gin.HandlerFunc {
 		client := resty.New()
 
 		res, err := client.R().
-		SetAuthToken(authtoken).
-		Get(fmt.Sprintf("https://api.supabase.com/v1/projects/%s/analytics/endpoints/metrics", id))
+			SetAuthToken(authtoken).
+			Get(fmt.Sprintf("https://api.supabase.com/v1/projects/%s/analytics/endpoints/metrics", id))
 
 		if err != nil {
 			ctx.JSON(http.StatusBadGateway, gin.H{
-				"message" : "upstream request failed",
-				"error" : err.Error(),
+				"message": "upstream request failed",
+				"error":   err.Error(),
 			})
+			return 
 		}
 
 		if res.IsError() {
 			ctx.JSON(http.StatusBadGateway, gin.H{
-				"message" : "upstream returned an error",
-				"status" : res.StatusCode(),
-				"data" : res.String(),
+				"message": "upstream returned an error",
+				"status":  res.StatusCode(),
+				"data":    res.String(),
 			})
+			return 
 		}
 
-		ctx.Data(http.StatusOK, "text/plain; version=0.0.4", res.Body())
+		parsers := string(res.Body())
+		fmi, err := prometheus.FetchMetrics(parsers)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to parse metrics",
+				"error":   err.Error(),
+			})
+			return 
+		}
+
+		usage:= prometheus.BuildSystemUsage(fmi, id)
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": usage,
+		})
 	}
 }

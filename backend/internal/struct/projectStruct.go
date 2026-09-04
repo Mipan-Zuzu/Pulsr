@@ -207,3 +207,62 @@ type Pause struct {
 type Start struct {
     Message string `json:"message"`
 }
+
+type Metric struct {
+    Name   string            `json:"name"`
+    Type   string            `json:"type"`
+    Labels map[string]string `json:"labels"`
+    Value  float64           `json:"value"`
+}
+
+type MetricsResponse struct {
+    Metrics []Metric `json:"metrics"`
+}
+
+type MetricsJSON struct {
+	Name string `json:"name"`
+	Help string `json:"help,omitempty"`
+	Type string `json:"type"`
+	Labels map[string]string `json:"labels,omitempty"`
+	Value float64 `json:"value"`
+}
+
+type SystemUsage struct {
+	ProjectRef string       `json:"project_ref"`
+	CPU        CPUUsage     `json:"cpu"`
+	Memory     MemoryUsage  `json:"memory"`
+	Disk       []DiskUsage  `json:"disk"`
+	PgBouncer  PgBouncerInfo `json:"pgbouncer"`
+	Timestamp  int64        `json:"timestamp"`
+}
+
+type CPUUsage struct {
+	LoadAvg15    float64            `json:"load_avg_15m"`
+	UsagePercent float64            `json:"usage_percent,omitempty"` // butuh delta antar 2 scrape
+	PerCoreMode  map[string]float64 `json:"per_core_seconds,omitempty"`
+}
+
+type MemoryUsage struct {
+	SwapTotalBytes     float64 `json:"swap_total_bytes"`
+	PageTablesBytes    float64 `json:"page_tables_bytes"`
+	SlabBytes          float64 `json:"slab_bytes"`
+	CommittedASBytes   float64 `json:"committed_as_bytes"`
+	DirtyBytes         float64 `json:"dirty_bytes"`
+	ShmemBytes         float64 `json:"shmem_bytes"`
+}
+
+type DiskUsage struct {
+	Device               string  `json:"device"`
+	IOTimeWeightedSeconds float64 `json:"io_time_weighted_seconds"`
+	ReadTimeSeconds       float64 `json:"read_time_seconds"`
+	DiscardTimeSeconds    float64 `json:"discard_time_seconds"`
+	FilesystemType        string  `json:"filesystem_type,omitempty"`
+}
+
+type PgBouncerInfo struct {
+	Version                 string  `json:"version"`
+	MaxClientConnections    float64 `json:"max_client_connections"`
+	ServerActiveConnections float64 `json:"server_active_connections"`
+	ServerLoginConnections  float64 `json:"server_login_connections"`
+	CachedDNSNames          float64 `json:"cached_dns_names"`
+}

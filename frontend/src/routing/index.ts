@@ -1,11 +1,12 @@
-import {createRouter, createWebHistory} from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 
 import Dashboard from "../view/Dashboard/Dashboard.vue"
 import SupabaseProject from "../Supabase/supabaseProject/SupabaseProject.vue"
+import SupabaseMonitorView from "../view/Supabase/SupabaseMonitorView.vue"
 
 const router = createRouter({
     history: createWebHistory(),
-    routes : [
+    routes: [
         {
             path: "/",
             component: Dashboard
@@ -13,6 +14,14 @@ const router = createRouter({
         {
             path: "/supabase/project/:id",
             component: SupabaseProject
+        },
+        {
+            path: "/supabase/project/:id/status",
+            component: SupabaseMonitorView
+        },
+        {
+            path: "/projects/:id",
+            redirect: to => `/supabase/project/${to.params.id}/status`
         }
     ]
 })

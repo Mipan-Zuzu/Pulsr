@@ -61,7 +61,7 @@ func SetValueRedis(ctx context.Context ,rdb *redis.Client, key string) (error, s
 		}
 
 
-		if rdbErr := rdb.Set(ctx, fmt.Sprintf("token_%s", keyrand), key, 5*time.Minute).Err(); rdbErr != nil {
+		if rdbErr := rdb.Set(ctx, fmt.Sprintf("token_%s", keyrand), key, 24*time.Hour).Err(); rdbErr != nil {
 			return rdbErr, ""
 		}
 
